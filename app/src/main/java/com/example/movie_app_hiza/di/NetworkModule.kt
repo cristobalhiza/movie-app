@@ -1,4 +1,4 @@
-package com.example.movie_app_hiza.data.local.di
+package com.example.movie_app_hiza.di
 
 import com.example.movie_app_hiza.BuildConfig
 import com.example.movie_app_hiza.data.remote.MovieApi

@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.movie_app_hiza.presentation.viewmodel.MovieViewModel
-import com.example.movie_app_hiza.presentation.viewmodel.navigation.NavGraph
-import com.example.movie_app_hiza.presentation.viewmodel.navigation.Screen
+import com.example.movie_app_hiza.presentation.navigation.NavGraph
+import com.example.movie_app_hiza.presentation.navigation.Screen
 import com.example.movie_app_hiza.ui.theme.MovieapphizaTheme
 import dagger.hilt.android.AndroidEntryPoint
 

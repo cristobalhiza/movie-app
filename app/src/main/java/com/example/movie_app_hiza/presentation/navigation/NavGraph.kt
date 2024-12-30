@@ -1,4 +1,4 @@
-package com.example.movie_app_hiza.presentation.viewmodel.navigation
+package com.example.movie_app_hiza.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
