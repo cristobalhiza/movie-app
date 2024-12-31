@@ -141,7 +141,7 @@ fun MovieItem(movie: MovieModel, onClick: (Int) -> Unit) {
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = movie.title ?: "Unknown Title",
+                text = movie.title,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(

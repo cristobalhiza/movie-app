@@ -16,16 +16,19 @@ class MovieRepository @Inject constructor(
     private val movieMapper: MovieMapper
 ) {
 
-    fun getPopularMovies(pages: Int): Flow<MoviesUiState> = flow {
+    fun getPopularMovies(page: Int): Flow<MoviesUiState> = flow {
         emit(MoviesUiState(isLoading = true))
-        val allMovies = mutableListOf<MovieModel>()
         try {
-            for (page in 1..pages) {
-                val response = movieApi.getPopularMovies(page)
-                val movies = response.movies.map { movieMapper.toDomainModel(it) }
-                allMovies.addAll(movies)
-            }
-            emit(MoviesUiState(movies = allMovies, isLoading = false))
+            val response = movieApi.getPopularMovies(page)
+            val movies = response.movies.map { movieMapper.toDomainModel(it) }
+            emit(
+                MoviesUiState(
+                    movies = movies,
+                    isLoading = false,
+                    currentPage = response.page,
+                    totalPages = response.totalPages
+                )
+            )
         } catch (e: Exception) {
             emit(MoviesUiState(isLoading = false, error = e.message))
         }
@@ -72,4 +75,3 @@ class MovieRepository @Inject constructor(
         }
     }
 }
-

@@ -5,7 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -20,65 +21,72 @@ import com.example.movie_app_hiza.domain.models.MovieModel
 
 @Composable
 fun PopularMoviesScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
+    val uiState by viewModel.popularMoviesState.collectAsState()
+
     LaunchedEffect(Unit) {
-        viewModel.fetchPopularMovies(6)
+        viewModel.fetchPopularMovies()
     }
 
-    val uiState = viewModel.popularMoviesState.collectAsState()
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        Text(
-            text = "Popular Movies",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
         when {
-            uiState.value.isLoading -> {
+            uiState.isLoading && uiState.movies.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "Loading movies...",
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                    Text("Loading movies...", color = MaterialTheme.colorScheme.onBackground)
                 }
             }
 
-            uiState.value.error != null -> {
+            uiState.error != null -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Error: ${uiState.value.error}",
-                        color = MaterialTheme.colorScheme.onBackground
+                        text = "Error: ${uiState.error}",
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }
 
             else -> {
-                val moviesByGenre = groupMoviesByGenre(uiState.value.movies)
+                val moviesByGenre = groupMoviesByGenre(uiState.movies)
 
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     moviesByGenre.forEach { (genre, movies) ->
                         item {
                             GenreSection(
                                 genre = genre,
                                 movies = movies,
-                                onMovieClick = onMovieClick
+                                onMovieClick = onMovieClick,
+                                onEndReached = {
+                                    if (!uiState.isLoading && viewModel.hasMorePages) {
+                                        viewModel.fetchPopularMovies()
+                                    }
+                                }
                             )
+                        }
+                    }
+
+                    if (uiState.isLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Cargando más películas...")
+                            }
                         }
                     }
                 }
@@ -91,9 +99,14 @@ fun PopularMoviesScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) 
 fun GenreSection(
     genre: String,
     movies: List<MovieModel>,
-    onMovieClick: (Int) -> Unit
+    onMovieClick: (Int) -> Unit,
+    onEndReached: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val lazyRowState = rememberLazyListState()
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Text(
             text = genre,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -101,26 +114,27 @@ fun GenreSection(
         )
 
         LazyRow(
+            state = lazyRowState,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.height(200.dp)
         ) {
-            items(movies) { movie ->
+            itemsIndexed(movies) { index, movie ->
                 MovieItem(
                     posterPath = movie.posterPath,
                     title = movie.title,
                     onClick = { onMovieClick(movie.id) }
                 )
+
+                if (index == movies.lastIndex) {
+                    onEndReached()
+                }
             }
         }
     }
 }
 
 @Composable
-fun MovieItem(
-    posterPath: String?,
-    title: String,
-    onClick: () -> Unit
-) {
+fun MovieItem(posterPath: String?, title: String, onClick: () -> Unit) {
     val baseUrl = "https://image.tmdb.org/t/p/w500"
     Column(
         modifier = Modifier

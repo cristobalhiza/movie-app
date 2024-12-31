@@ -6,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.movie_app_hiza.presentation.navigation.NavGraph
 import com.example.movie_app_hiza.presentation.navigation.Screen
@@ -36,12 +38,27 @@ fun MovieApp() {
 
         Scaffold(
             topBar = {
+                val currentBackStackEntry = navController.currentBackStackEntryAsState()
+                val currentDestination = currentBackStackEntry.value?.destination?.route
+                val isRootScreen = currentDestination == Screen.PopularMovies.route
+
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
                             "Movie App",
                             color = MaterialTheme.colorScheme.onBackground
                         )
+                    },
+                    navigationIcon = {
+                        if (!isRootScreen) {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background

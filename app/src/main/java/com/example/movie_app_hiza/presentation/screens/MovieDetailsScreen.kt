@@ -48,6 +48,7 @@ fun MovieDetailsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            // Backdrop Image
             if (!it.backdropPath.isNullOrEmpty()) {
                 Image(
                     painter = rememberAsyncImagePainter("https://image.tmdb.org/t/p/w500${it.backdropPath}"),
@@ -58,82 +59,123 @@ fun MovieDetailsScreen(
                     contentScale = ContentScale.Crop
                 )
             }
-            Text(
-                text = it.title ?: "Unknown Title",
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-            Column(
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Poster and Title Section
+            Row(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxSize()
+                // Movie Poster
+                if (!it.posterPath.isNullOrEmpty()) {
+                    Image(
+                        painter = rememberAsyncImagePainter("https://image.tmdb.org/t/p/w500${it.posterPath}"),
+                        contentDescription = "Poster Image",
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(180.dp)
+                            .padding(end = 16.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                // Title, Rating, and Favorite Button
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (isFavorite) "Liked" else "Like",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        text = it.title,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    IconButton(
-                        onClick = {
-                            if (isFavorite) {
-                                viewModel.removeMovieFromFavorites(it.id)
-                                Toast.makeText(
-                                    context,
-                                    "Removed from favorites",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                viewModel.addMovieToFavorites(it)
-                                Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        }
+                    // Rating
+                    Text(
+                        text = "⭐ ${String.format("%.1f", it.voteAverage ?: "N/A")}",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    // Favorite Button
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (isFavorite) Color.Red else Color.Gray
+                        IconButton(
+                            onClick = {
+                                if (isFavorite) {
+                                    viewModel.removeMovieFromFavorites(it.id)
+                                    Toast.makeText(
+                                        context,
+                                        "Removed from favorites",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    viewModel.addMovieToFavorites(it)
+                                    Toast.makeText(
+                                        context,
+                                        "Added to favorites",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = null,
+                                tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Text(
+                            text = if (isFavorite) "Added to Favorites" else "Add to Favorites",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Overview Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Overview",
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
-                    text = it.overview ?: "No overview available.",
+                    text = it.overview,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Text(
-                    text = "Año de estreno: ${it.formattedYear}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Puntuación: ${it.voteAverage ?: "N/A"} (${it.voteCount} votos)",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                if (!it.genreIds.isNullOrEmpty()) {
-                    Text(
-                        text = "Géneros: ${it.genreIds.joinToString(", ") { id -> getGenreName(id) }}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                Text(
-                    text = "Popularidad: ${it.popularity}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onBack) {
-                    Text("Volver")
-                }
+
+                // Release Date and Popularity
+                Text(
+                    text = "Release Date: ${it.formattedYear}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Popularity: ${it.popularity}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(32.dp))
             }
+
         }
     } ?: Box(
         modifier = Modifier.fillMaxSize(),
@@ -141,19 +183,6 @@ fun MovieDetailsScreen(
     ) {
         CircularProgressIndicator()
     }
+
 }
 
-private fun getGenreName(genreId: Int): String {
-    val genreMap = mapOf(
-        28 to "Acción",
-        12 to "Aventura",
-        16 to "Animación",
-        35 to "Comedia",
-        80 to "Crimen",
-        18 to "Drama",
-        10751 to "Familiar",
-        27 to "Terror",
-        878 to "Ciencia Ficción"
-    )
-    return genreMap[genreId] ?: "Desconocido"
-}

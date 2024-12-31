@@ -13,7 +13,7 @@ import javax.inject.Inject
 class MovieViewModel @Inject constructor(
     private val repository: MovieRepository
 ) : ViewModel() {
-
+    private var currentPage = 1
     private val _popularMoviesState = MutableStateFlow(MoviesUiState())
     val popularMoviesState: StateFlow<MoviesUiState> = _popularMoviesState.asStateFlow()
 
@@ -23,10 +23,25 @@ class MovieViewModel @Inject constructor(
     private val _movieDetailsState = MutableStateFlow<MovieModel?>(null)
     val movieDetailsState: StateFlow<MovieModel?> = _movieDetailsState.asStateFlow()
 
-    fun fetchPopularMovies(pages: Int) {
+    var hasMorePages: Boolean = true
+
+    fun fetchPopularMovies() {
         viewModelScope.launch {
-            repository.getPopularMovies(pages).collect { state ->
-                _popularMoviesState.value = state
+            repository.getPopularMovies(currentPage).collect { uiState ->
+                if (uiState.error == null) {
+                    _popularMoviesState.value = _popularMoviesState.value.copy(
+                        movies = _popularMoviesState.value.movies + uiState.movies,
+                        isLoading = uiState.isLoading,
+                        error = null
+                    )
+                    hasMorePages = uiState.currentPage < uiState.totalPages
+                    currentPage = uiState.currentPage + 1
+                } else {
+                    _popularMoviesState.value = _popularMoviesState.value.copy(
+                        isLoading = false,
+                        error = uiState.error
+                    )
+                }
             }
         }
     }
