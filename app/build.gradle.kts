@@ -124,12 +124,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    //login
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.google.firebase.auth.ktx)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.google.firebase.database.ktx)
-
     //test
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
