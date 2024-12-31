@@ -26,5 +26,3 @@ data class MovieModel(
 }
 
 
-
-
