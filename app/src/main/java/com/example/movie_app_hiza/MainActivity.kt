@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -18,12 +19,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.movie_app_hiza.presentation.navigation.NavGraph
 import com.example.movie_app_hiza.presentation.navigation.Screen
 import com.example.movie_app_hiza.ui.theme.MovieapphizaTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
         setContent {
             MovieApp()
         }
@@ -58,6 +64,15 @@ fun MovieApp() {
                                     tint = MaterialTheme.colorScheme.onBackground
                                 )
                             }
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(Screen.Login.route) }) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "User Account",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(

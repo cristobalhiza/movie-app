@@ -19,6 +19,7 @@ sealed class Screen(val route: String) {
 
     data object SearchMovies : Screen("search_movies")
     data object Favorites : Screen("favorites")
+    data object Login : Screen("login")
 }
 
 @Composable
@@ -67,5 +68,11 @@ fun NavGraph(
                 navController.popBackStack()
             }
         }
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = { navController.popBackStack() }
+            )
+        }
     }
 }
+
