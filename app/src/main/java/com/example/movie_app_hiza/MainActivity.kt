@@ -3,6 +3,7 @@ package com.example.movie_app_hiza
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -11,9 +12,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.movie_app_hiza.presentation.viewmodel.MovieViewModel
 import com.example.movie_app_hiza.presentation.navigation.NavGraph
 import com.example.movie_app_hiza.presentation.navigation.Screen
 import com.example.movie_app_hiza.ui.theme.MovieapphizaTheme
@@ -34,21 +33,31 @@ class MainActivity : ComponentActivity() {
 fun MovieApp() {
     MovieapphizaTheme {
         val navController = rememberNavController()
-        val movieViewModel = hiltViewModel<MovieViewModel>()
 
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Movie App") }
+                    title = {
+                        Text(
+                            "Movie App",
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    )
                 )
             },
             bottomBar = {
                 BottomNavigationBar(navController)
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.background
         ) { innerPadding ->
             NavGraph(
                 navController = navController,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.background)
             )
         }
     }

@@ -38,6 +38,9 @@ fun NavGraph(
         }
         composable(Screen.Favorites.route) {
             val movieViewModel = hiltViewModel<MovieViewModel>()
+            LaunchedEffect(Unit) {
+                movieViewModel.fetchFavoriteMovies()
+            }
             FavoritesScreen(viewModel = movieViewModel) { movieId ->
                 navController.navigate(Screen.MovieDetails.createRoute(movieId))
             }

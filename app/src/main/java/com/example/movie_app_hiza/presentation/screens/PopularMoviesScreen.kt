@@ -29,12 +29,15 @@ fun PopularMoviesScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Text(
             text = "Popular Movies",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            ),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -44,17 +47,25 @@ fun PopularMoviesScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) 
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Cargando películas...")
+                    Text(
+                        "Loading movies...",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
+
             uiState.value.error != null -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Error: ${uiState.value.error}")
+                    Text(
+                        "Error: ${uiState.value.error}",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
+
             else -> {
                 val moviesByGenre = groupMoviesByGenre(uiState.value.movies)
 
@@ -90,7 +101,7 @@ fun GenreSection(
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             items(movies) { movie ->

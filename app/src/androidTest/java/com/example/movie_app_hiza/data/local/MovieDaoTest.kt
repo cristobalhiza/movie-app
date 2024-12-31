@@ -1,12 +1,9 @@
-package com.example.movie_app_hiza
+package com.example.movie_app_hiza.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.movie_app_hiza.data.local.AppDatabase
-import com.example.movie_app_hiza.data.local.MovieDao
-import com.example.movie_app_hiza.data.local.MovieEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After

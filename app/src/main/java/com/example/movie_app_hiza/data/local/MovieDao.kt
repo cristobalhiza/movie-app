@@ -18,7 +18,6 @@ interface MovieDao {
     @Query("UPDATE movies SET isFavorite = :isFavorite WHERE id = :movieId")
     suspend fun updateFavorite(movieId: Int, isFavorite: Boolean): Int
 
-
     @Query("SELECT * FROM movies")
     fun getCachedMovies(): Flow<List<MovieEntity>>
 
